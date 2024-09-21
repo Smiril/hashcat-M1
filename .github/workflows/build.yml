@@ -65,7 +65,7 @@ jobs:
       fail-fast: false
       matrix:
         shared: [0, 1]
-    name: Build macOS (${{ Smiril.shared == 0 && 'Static' || 'Shared' }})
+    name: Build macOS (${{ matrix.shared == 0 && 'Static' || 'Shared' }})
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -75,15 +75,14 @@ jobs:
         run: sudo xcode-select -s /Applications/Xcode_16.0.app/Contents/Developer
       - name: Show current version of Xcode
         run: xcodebuild -version
-      - uses: actions/checkout@v3
       - name: Build
         env:
-          SHARED: ${{ Smiril.shared }}
+          SHARED: ${{ matrix.shared }}
         run: make
       - name: Generate artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: hashcat-macos-${{ Smiril.shared == 0 && 'static' || 'shared' }}
+          name: hashcat-macos-${{ matrix.shared == 0 && 'static' || 'shared' }}
           path: ${{ env.include_paths }}
 
   build-windows:
